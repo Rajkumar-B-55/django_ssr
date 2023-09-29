@@ -67,10 +67,9 @@ class RegisterUser(APIView):
                     password=password
                 )
                 add_user.save()
-                return Response(data={'msg': 'User Added Successfully', 'Credentials': 'Check your Email'},
-                                status=status.HTTP_201_CREATED)
+                return Response(data={"status": "Success.User Created"}, status=status.HTTP_201_CREATED)
             else:
-                return Response(data={"msg": "Invalid form data. Please check your input."},
+                return Response(data={"status": "Failure.Check your inputs"},
                                 status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(data={'error': str(e.args[1])}, status=status.HTTP_404_NOT_FOUND)
