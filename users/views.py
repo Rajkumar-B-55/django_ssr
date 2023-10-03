@@ -36,10 +36,19 @@ class ObtainTokenView(APIView):
                 if user is not None:
                     login(request, user)
                     jwt_token = JWTAuthentication.create_payload(user)
-                    return Response({'token': jwt_token}, status=status.HTTP_201_CREATED)
+                    data = {
+                        'email': email,
+                        'password': password,
+                        'jwt': jwt_token
+                    }
+                    return render(request, 'users/login.html', context=data)
+                    # return Response({'token': jwt_token}, status=status.HTTP_201_CREATED)
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'users/login.html')
 
 
 class RegisterUser(APIView):
