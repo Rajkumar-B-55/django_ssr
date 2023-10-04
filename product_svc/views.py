@@ -1,3 +1,6 @@
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,7 +11,7 @@ from .models import Product
 
 
 class ProductGetAPI(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, pk=None, *args, **kwargs):
         try:
@@ -31,22 +34,23 @@ class ProductGetAPI(APIView):
 
 
 class ProductAddAPI(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         try:
             form = ProductForm(data=request.data)
             if form.is_valid():
                 form.save()
-                return Response(data={'Success': form.data}, status=status.HTTP_201_CREATED)
-            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
-
+                product_name = form.cleaned_data.get('name')
+                messages.success(request, f'{product_name} has been added')
+                return redirect('dashboard_product')
+            return render(request, 'products/products.html')
         except Exception as e:
-            return Response(data={'error': str(e.args[1])}, status=status.HTTP_404_NOT_FOUND)
+            return render(request, 'error_page.html', {'error_message': str(e)})
 
 
 class ProductPutAPI(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def put(self, request, pk, *args, **kwargs):
         try:
@@ -73,16 +77,41 @@ class ProductPutAPI(APIView):
         except Exception as e:
             return Response(data={'error': str(e.args[1])}, status=status.HTTP_404_NOT_FOUND)
 
+    def get(self, request, pk):
+        product_instance = Product.objects.get(pk=pk)
+        form = ProductForm(instance=product_instance)
+        context = {"form": form}
+        return render(request, 'products/products_edit.html', context)
+
+    def post(self, request, pk):
+        product_instance = Product.objects.get(pk=pk)
+        form = ProductForm(request.POST, instance=product_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_product')
+
 
 class ProductDeleteAPI(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def delete(self, request, pk, *args, **kwargs):
         try:
             product = Product.objects.filter(pk=pk).first()
+            product_name = product.name
             if not product:
                 return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
             product.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            messages.success(request, f'{product_name} has been Deleted')
+            return redirect('dashboard_product')
         except Exception as e:
             return Response(data={'error': str(e.args[1])}, status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk):
+        try:
+            product = get_object_or_404(Product, pk=pk)
+            product_name = product.name
+            product.delete()
+            messages.success(request, f'{product_name} has been Deleted')
+            return redirect('dashboard_product')
+        except Exception as e:
+            return render(request, 'error_page.html', {'error_message': str(e)})

@@ -1,0 +1,43 @@
+{% extends 'partials/base_auth.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+<div class="row my-4">
+    <div class="col-md-6 offset-md-3">
+        <div class="border p-3 bg-white">
+            <h4 class="text-center">Login Page</h4>
+            <hr>
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="emailField">Email</label>
+                    <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            id="emailField"
+                            class="form-control"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordField">Password</label>
+                    <input
+                            type="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            class="form-control"
+                            id="passwordField"
+                    />
+                </div>
+
+                <div class="form-group text-center">
+                    <button class="btn btn-primary btn-block">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
