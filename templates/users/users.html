@@ -69,7 +69,7 @@
                     <td>{{ user.phone_number }}</td>
                     <td>
                         <a class="btn btn-info btn-sm" href="{% url 'update_user_admin' user.email %}">Edit</a>
-                        <a class="btn btn-danger btn-sm" href="#">Delete</a>
+                        <a class="btn btn-danger btn-sm" href="{% url 'delete_user_admin' user.email %}">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

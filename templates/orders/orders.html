@@ -8,47 +8,58 @@
 <div class="container">
     <div class="row my-4">
         <div class="col-md-4">
-
+            <div id="message-container">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} fade-out">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="border bg-white p-3">
+                <h4>Place Order</h4>
+                <hr>
+                <form action="{% url 'place_order_api' %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                </form>
+            </div>
         </div>
         <div class="col-md-8">
             <table class="table bg-white">
                 <thead class="bg-info">
                 <tr class="text-white">
                     <th scope="col">#</th>
-                    <th scope="col">Product</th>
-                    <th scope="col">Category</th>
+                    <th scope="col">Order ID</th>
+                    <th scope="col">Product ID</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Order by</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Activity</th>
                 </tr>
                 </thead>
                 <tbody>
+                {% for order in orders %}
                 <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ order.order_uuid }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.user_id }}</td>
+                    <td>{{ order.get_total_item_price }}</td>
+                    <td>{{ order.status }}</td>
                     <td>
-                        Broni
+                        <a class="btn btn-info btn-sm"
+                           href="{%url 'order_update_status_api' order.order_uuid %}">Edit</a>
                     </td>
+
+
                 </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td>
-                        Kenneth
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                    <td>
-                        Cecilia
-                    </td>
-                </tr>
+                {% endfor %}
+
                 </tbody>
             </table>
         </div>

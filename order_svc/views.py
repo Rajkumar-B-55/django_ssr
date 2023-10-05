@@ -1,96 +1,100 @@
-from rest_framework import permissions, status
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from product_svc.models import Product
-from .forms import OrderForm
+from users.decorators import allowed_users
+from .forms import OrderForm, OrderUpdateForm
 from .models import Order
 
 
-class OrderAddAPI(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def order_update_status(request, uuid):
+    try:
+        order = Order.objects.get(order_uuid=uuid)
+        if not order:
+            return render(request, 'error_page.html', {'error_message': 'Order not found'}, status=404)
 
-    def post(self, request):
-        try:
-            product_id = request.query_params.get('product_id')
-            user = request.user
-            product = Product.objects.filter(id=product_id).first()
+        if request.method == 'POST':
+            form = OrderUpdateForm(request.POST, instance=order)
+            if form.is_valid():
+                order.status = form.cleaned_data['status']
+                order.save()
+                messages.success(request, f'{order.order_uuid} Order Status updated')
+                return redirect('dashboard_order')
+        else:
+            form = OrderUpdateForm(instance=order)
+            context = {'form': form}
+            return render(request, 'orders/order_update.html', context)
+    except Order.DoesNotExist:
+        return render(request, 'error_page.html', {'error_message': 'Order not found'}, status=404)
+    except Exception as e:
+        return render(request, 'error_page.html', {'error_message': str(e)})
 
-            if product is None:
-                return Response(data={'error': 'Product Not available'}, status=status.HTTP_404_NOT_FOUND)
 
-            if user is not None:
-                form = OrderForm(request.POST)
-                if form.is_valid():
-                    order_status = form.cleaned_data['status']
-                    order_quantity = form.cleaned_data['quantity']
+@login_required(login_url='login')
+@allowed_users(allowed_roles='admin')
+def delete(request, pk):
+    try:
+        order = Order.objects.filter(pk=pk).first()
+        if not order:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return render(request, 'error_page.html', {'error_message': str(e)},
+                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                    # Create a new order associated with the user and product
-                    order_add = Order(user=user, product=product, status=order_status, quantity=order_quantity)
-                    order_add.save()
 
-                    return Response(
-                        data={'msg': f"Order placed Successfully. Order Track id is {order_add.order_uuid}"})
-                else:
-                    return Response(data={"msg": "Invalid form data. Please check your input."},
-                                    status=status.HTTP_400_BAD_REQUEST)
+@login_required(login_url='login')
+def place_order(request):
+    try:
+        user = request.user
+        if user is not None:
+            form = OrderForm(request.POST)
+            if form.is_valid():
+                product_name = form.cleaned_data['product']
+                product = Product.objects.get(name=product_name)
+                order_quantity = form.cleaned_data['quantity']
+                order_add = Order(user=user, status='Pending', product=product, quantity=order_quantity)
+                order_add.save()
+                messages.success(request, 'Order placed Successfully')
+                return redirect('dashboard_order')
             else:
-                return Response({'error': 'User Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+                messages.warning(request, 'Invalid form data. Please check the fields.')
+                return redirect('dashboard_order')
 
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return render(request, 'error_page.html', {'error_message': str(e)},
+                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class OrderGetAPI(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+@login_required(login_url='login')
+@allowed_users(allowed_roles='admin')
+def order_list(request):
+    try:
+        user = request.user
+        user_order = Order.objects.filter(user_id=user.id)
+        response_data = [
+            {
+                "order_tracking_id": str(order.order_uuid),
+                "order_status": order.status,
+                "product_name": order.product.name,
+                "product_quantity": order.product.quantity,
+                "product_price": float(order.product.price),
+                "product_description": order.product.description,
+                "product_total_price": float(order.get_total_item_price),
+                "customer_name": order.user.first_name,
+                "customer_email": order.user.email,
+            }
 
-    def get(self, request):
-        try:
-            user = request.user
-            user_order = Order.objects.filter(user_id=user.id)
-            response_data = [
-                {
-                    "order_tracking_id": str(order.order_uuid),
-                    "order_status": order.status,
-                    "product_name": order.product.name,
-                    "product_quantity": order.product.quantity,
-                    "product_price": float(order.product.price),
-                    "product_description": order.product.description,
-                    "product_total_price": float(order.get_total_item_price),
-                    "customer_name": order.user.first_name,
-                    "customer_email": order.user.email,
-                }
+            for order in user_order
+        ]
 
-                for order in user_order
-            ]
-
-            return Response(response_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#
-#
-# def put(self, request, pk):
-#     try:
-#         order = Order.objects.filter(pk=pk).first()
-#         if not order:
-#             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
-#
-#         form = OrderForm(instance=order, data=request.data)
-#         if form.is_valid():
-#             form.save()
-#             return Response({'message': 'Order updated successfully'})
-#         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
-#     except Exception as e:
-#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#
-#
-# def delete(self, request, pk):
-#     try:
-#         order = Order.objects.filter(pk=pk).first()
-#         if not order:
-#             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
-#         order.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-#     except Exception as e:
-#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(response_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return render(request, 'error_page.html', {'error_message': str(e)},
+                      status=status.HTTP_500_INTERNAL_SERVER_ERROR)
