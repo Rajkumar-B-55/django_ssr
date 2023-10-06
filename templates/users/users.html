@@ -15,36 +15,37 @@
                 {% endfor %}
                 {% endif %}
             </div>
-            <div class="border bg-white p-3">
+            <div class="border bg-white p-4">
                 <h4>Add User</h4>
                 <hr>
                 <form method="post" action="{% url 'register_user' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="{{ form.first_name.id_for_label }}">First Name</label>
-                        {{ form.first_name }}
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="FirstName" required>
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.last_name.id_for_label }}">Last Name</label>
-                        {{ form.last_name }}
+                        <label for="last_name">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="LastName">   
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.username.id_for_label }}">Username</label>
-                        {{ form.username }}
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="Email" required>
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.email.id_for_label }}">Email</label>
-                        {{ form.email }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                        {{ form.phone_number }}
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" class="form-control" name="phone_number" id="phone_number"  pattern="[0-9]{10}" required>
+                        <small class="form-text text-muted">Please enter a 10-digit phone number (numeric only).</small>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <small class="form-text text-muted">Default Password is 0000</small>
                     </div>
-                    <button class="btn btn-success btn-block" type="submit">Add User</button>
+                    <div class="form-group">
+                        <button class="btn btn-success btn-block" type="submit">Add User</button>
+                        <button class="btn btn-success btn-block" type="submit">Reset</button>
+                    </div>
                 </form>
             </div>
         </div>

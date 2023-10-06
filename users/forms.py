@@ -21,13 +21,13 @@ class RegistrationForm_(forms.ModelForm):
         model = User
         fields = '__all__'
         exclude = ['is_superuser', 'groups', 'user_permissions', 'is_staff', 'is_active', 'date_joined', 'role',
-                   'last_login']
+                   'last_login', 'username']
 
 
 class UpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone_number',]
+        fields = ['first_name', 'last_name', 'phone_number', ]
     # first_name = forms.CharField(max_length=200, required=True)
     # last_name = forms.CharField(max_length=200, required=False)
     # phone_number = forms.CharField(max_length=13, required=True)

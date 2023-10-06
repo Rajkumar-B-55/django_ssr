@@ -1,66 +1,100 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>{% block title %}Admin Panel{% endblock %}</title>
-</head>
-<body>
-        <!-- Sidebar -->
-        <nav id="sidebar" class="col-md-2 col-lg-2 d-md-block  sidebar ">
-            <div class="position-relative pt-90">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'dashboard_index' %}"> Dashboard </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard_users' %}"> Users </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="
-{% url 'dashboard_product' %}"> Products </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard_order' %}"> Orders </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user_profile' %}"> Profile </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}"> Logout </a>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
 
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <div class="main-container">
-<div class="container-fluid ">
-    <div class="row">
-        <!-- Main Content -->
-        <main class="col-md-12 col-lg-12">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-2 col-lg-2 d-md-block sidebar">
+      <figure class="icon user">
+        <div class="logo user-avatar">
+          <img src="{% static 'favicon.png' %}" alt="Logo" />
+        </div>
+        <figcaption class="user-figcaption">Admin Dashboard</figcaption>
+      </figure>
+
+      <div class="position-relative pt-90">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'dashboard_index' %}">
+              <i class="fas fa-home"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard_users' %}">
+              <i class="fas fa-users"></i> Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard_product' %}">
+              <i class="fas fa-shopping-cart"></i> Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard_order' %}">
+              <i class="fas fa-shopping-bag"></i> Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'user_profile' %}">
+              <i class="fas fa-user"></i> Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Main Content -->
+          <main class="col-md-12 col-lg-12">
             <div class="container">
-                <!-- Navbar --> {% include 'partials/nav.html' %}
-                <!-- Topside -->
-                <div class="container"> {% include 'partials/topside.html' %}</div>
-                <!-- Content Block -->
-                <div class="container"> {% block content %}
-                    <!-- Default content goes here --> {% endblock %}
-                </div>
+              <!-- Navbar -->
+              {% include 'partials/nav.html' %}
+              <!-- Topside -->
+              <div class="container">{% include 'partials/topside.html' %}</div>
+              <!-- Content Block -->
+              <div class="container">
+                {% block content %}
+                <!-- Default content goes here -->
+                {% endblock %}
+              </div>
             </div>
-        </main>
+          </main>
+        </div>
+      </div>
     </div>
-</div>
-            </div>
-<!-- External JavaScript -->
-<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-        integrity="sha384-KyZXEAg3QhqLMpG8r+Lz6GPOoHqK9R/4rt6uURqO+H8jBpAmYzW5gRV9p6miSN4z"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <!-- External JavaScript -->
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+Lz6GPOoHqK9R/4rt6uURqO+H8jBpAmYzW5gRV9p6miSN4z"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
