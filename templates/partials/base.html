@@ -12,11 +12,9 @@
     <title>{% block title %}Admin Panel{% endblock %}</title>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
         <!-- Sidebar -->
         <nav id="sidebar" class="col-md-2 col-lg-2 d-md-block  sidebar ">
-            <div class="position-relative">
+            <div class="position-relative pt-90">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'dashboard_index' %}"> Dashboard </a>
@@ -41,8 +39,11 @@
                 </ul>
             </div>
         </nav>
+        <div class="main-container">
+<div class="container-fluid ">
+    <div class="row">
         <!-- Main Content -->
-        <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-12 col-lg-12">
             <div class="container">
                 <!-- Navbar --> {% include 'partials/nav.html' %}
                 <!-- Topside -->
@@ -55,6 +56,7 @@
         </main>
     </div>
 </div>
+            </div>
 <!-- External JavaScript -->
 <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha384-KyZXEAg3QhqLMpG8r+Lz6GPOoHqK9R/4rt6uURqO+H8jBpAmYzW5gRV9p6miSN4z"
